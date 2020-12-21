@@ -10,7 +10,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "frankfurter-client", url = "https://api.frankfurter.app/")
+@FeignClient(name = "frankfurter-client", url = "${frankfurter.feign.clients.url}")
 public interface OpenFeignClient {
     @GetMapping(value = "/{date}")
     public CurrencyDetails getRate(@PathVariable String date);
