@@ -6,6 +6,7 @@
 package com.frankfurter.controller;
 
 import com.frankfurter.domain.CurrencyDetails;
+import com.frankfurter.enums.ResultCode;
 import com.frankfurter.model.CurrencyModel;
 import com.frankfurter.service.Services;
 import com.frankfurter.util.DateCheckcer;
@@ -45,11 +46,11 @@ public class CurrencyController {
         if(rate !=null && rate!=""){
             return "USD: " + rate + " ON " + date;
         }        
-        CurrencyDetails cd = new CurrencyDetails();
+        CurrencyDetails cd = feignClient.getRate(date);
+        if(cd.getCode() == (ResultCode.ERROR)){
+            return "Please try it later!!!";
+        }
         CurrencyModel model = new CurrencyModel();
-        
-        cd = feignClient.getRate(date);
-        
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date requestDate = new Date();
         

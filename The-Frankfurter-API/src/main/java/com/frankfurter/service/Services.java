@@ -28,7 +28,7 @@ public class Services {
     }
     
     public List<CurrencyModel> listAll() {
-        return repository.findAllByOrderByRateDateDesc();
+        return repository.findAllByOrderByRateDateDesc() ;
     }
     
     public String findByDate(String s){
