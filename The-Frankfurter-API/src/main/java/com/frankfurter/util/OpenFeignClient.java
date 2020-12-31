@@ -19,7 +19,7 @@ public interface OpenFeignClient {
     public CurrencyDetails findByDateAPI(@PathVariable String date);
 }
 
-//error handling
+//response timeout and error handling
 @Component
 class HystrixClientFallback implements OpenFeignClient {
     @Override
