@@ -38,22 +38,34 @@ public class CurrencyController {
     
     @GetMapping(value = "/{date}")
     public String getRate(@PathVariable String date){
+        //checking date format
         if(!DateCheckcer.dateValidation(date)){
             return "Invalid Date Format!!!";
         }
+        //getting request date
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date requestDate = new Date();
+        //creating persistence object
+        CurrencyModel model = new CurrencyModel();
         
+        //checking local db to get data
         String rate = iService.findByDate(date);
+        
         if(rate !=null && rate!=""){
+            //if callback saving to db
+            model.setRate(rate);
+            model.setRateDate(date);
+            model.setRequestDate(dateFormat.format(requestDate));
+            iService.save(model);
             return "USD: " + rate + " ON " + date;
-        }        
-        CurrencyDetails cd = feignClient.getRate(date);
+        }
+        
+        //getting data from outer api
+        CurrencyDetails cd = feignClient.findByDateAPI(date);
         if(cd.getCode() == (ResultCode.ERROR)){
             return "Please try it later!!!";
         }
-        CurrencyModel model = new CurrencyModel();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Date requestDate = new Date();
-        
+        //saving to db
         Map<String,Object> map = cd.getRates();
         model.setRate(map.get("USD").toString());
         model.setRateDate(date);
