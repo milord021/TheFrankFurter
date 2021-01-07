@@ -11,6 +11,8 @@ import com.frankfurter.model.CurrencyModel;
 import com.frankfurter.repository.ICurrencyRepository;
 import com.frankfurter.util.OpenFeignClient;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +33,14 @@ public class Services {
     @Autowired
     OpenFeignClient feignClient;
 
-    public void save(CurrencyModel model) {
+    public void save(String rate, String date) {
+        //getting request date
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date requestDate = new Date();
+        CurrencyModel model = new CurrencyModel();
+        model.setRate(rate);
+        model.setRateDate(date);
+        model.setRequestDate(dateFormat.format(requestDate));
         repository.save(model);
     }
 
@@ -39,17 +48,13 @@ public class Services {
         return repository.findAllByOrderByRateDateDesc();
     }
 
-    public String findByDate(String date, String requestDate) {
+    public String findByDate(String date) {
         //checking local db to get data
         String rate = repository.findByRateDate(date);
         //creating persistence object
-        CurrencyModel model = new CurrencyModel();
         if (rate != null && rate != "") {
             //if callback saving to db
-            model.setRate(rate);
-            model.setRateDate(date);
-            model.setRequestDate(requestDate);
-            save(model);
+            save(rate, date);
             return "USD: " + rate + " ON " + date;
             
         } else {
@@ -60,10 +65,7 @@ public class Services {
             }
             //saving to db
             Map<String, Object> map = cd.getRates();
-            model.setRate(map.get("USD").toString());
-            model.setRateDate(date);
-            model.setRequestDate(requestDate);
-            save(model);
+            save(map.get("USD").toString(), date);
             return "USD: " + map.get("USD").toString() + " ON " + date;
         }
     }

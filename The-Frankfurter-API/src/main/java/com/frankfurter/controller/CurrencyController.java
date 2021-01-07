@@ -26,17 +26,14 @@ public class CurrencyController {
     
     @Autowired
     Services iService;
-    ///({date1}|{date1}..{date2})
+    
     @GetMapping(value = "/{date}")
     public String getRate(@PathVariable String date){
         //checking date format
         if(!DateCheckcer.dateValidation(date)){
             return "Invalid Date Format!!!";
         }
-        //getting request date
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Date requestDate = new Date();
-        String response = iService.findByDate(date, dateFormat.format(requestDate));
+        String response = iService.findByDate(date);
 
         return response;
     }
